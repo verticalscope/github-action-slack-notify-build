@@ -10066,15 +10066,15 @@ function formatChannelName(channel) {
 module.exports.formatChannelName = formatChannelName;
 
 function buildSlackBlocks({ title, status, color, github }) {
-  const { payload, ref, workflow, eventName } = github.context;
-  const { event }  = github.event;
+  const { payload, ref, workflow, eventName, event } = github.context;
   const { owner, repo } = context.repo;
   const branch = eventName === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
   const sha = eventName === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
   const runId = parseInt(process.env.GITHUB_RUN_ID, 10);
 
-  const msg = event.commits[0].message;
+  console.log(event);
+  const msg = event.head_commit.message;
 
   return [
     {
