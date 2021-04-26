@@ -18,7 +18,7 @@ const { buildSlackBlocks, formatChannelName } = require('./src/utils');
       return;
     }
 
-    const attachments = buildSlackBlocks({ title, status, color, github });
+    const blocks = buildSlackBlocks({ title, status, color, github });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
 
     if (!channelId) {
@@ -30,7 +30,7 @@ const { buildSlackBlocks, formatChannelName } = require('./src/utils');
 
     const args = {
       channel: channelId,
-      attachments,
+      blocks,
     };
 
     if (messageId) {

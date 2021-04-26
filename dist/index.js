@@ -1081,7 +1081,7 @@ const { buildSlackBlocks, formatChannelName } = __webpack_require__(543);
       return;
     }
 
-    const attachments = buildSlackBlocks({ title, status, color, github });
+    const blocks = buildSlackBlocks({ title, status, color, github });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
 
     if (!channelId) {
@@ -1093,7 +1093,7 @@ const { buildSlackBlocks, formatChannelName } = __webpack_require__(543);
 
     const args = {
       channel: channelId,
-      attachments,
+      blocks,
     };
 
     if (messageId) {
@@ -10066,7 +10066,7 @@ function formatChannelName(channel) {
 module.exports.formatChannelName = formatChannelName;
 
 function buildSlackBlocks({ title, status, color, github }) {
-  const { payload, ref, workflow, eventName, event } = github.context;
+  const { payload, ref, workflow, eventName } = github.context;
   const { owner, repo } = context.repo;
   const branch = eventName === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
@@ -10077,55 +10077,47 @@ function buildSlackBlocks({ title, status, color, github }) {
 
   return [
     {
-      color: color,
-      ts: Math.floor(Date.now() / 1000),
-      footer_icon: 'https://github.githubassets.com/favicon.ico',
-      footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
-      blocks: [
+      type: 'header',
+      text: {
+        type: 'plain_text',
+        text: title,
+      },
+    },
+    {
+      type: 'section',
+      fields: [
         {
-          type: 'header',
-          text: {
-            type: 'plain_text',
-            text: title,
-          },
+          type: 'mrkdwn',
+          text: `*Status:*\n${status}`,
         },
         {
-          type: 'section',
-          fields: [
-            {
-              type: 'mrkdwn',
-              text: `*Status:*\n${status}`,
-            },
-            {
-              type: 'mrkdwn',
-              text: `*Workflow*:\n<https://github.com/${owner}/${repo}/actions/runs/${runId} | ${workflow}>`,
-            },
-          ],
+          type: 'mrkdwn',
+          text: `*Workflow*:\n<https://github.com/${owner}/${repo}/actions/runs/${runId} | ${workflow}>`,
+        },
+      ],
+    },
+    {
+      type: 'section',
+      fields: [
+        {
+          type: 'mrkdwn',
+          text: `*Repo:*\n<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
         },
         {
-          type: 'section',
-          fields: [
-            {
-              type: 'mrkdwn',
-              text: `*Repo:*\n<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
-            },
-            {
-              type: 'mrkdwn',
-              text: `*Branch*:\n<https://github.com/${owner}/${repo}/commit/${sha} | ${branch}>`,
-            },
-          ],
+          type: 'mrkdwn',
+          text: `*Branch*:\n<https://github.com/${owner}/${repo}/commit/${sha} | ${branch}>`,
         },
+      ],
+    },
+    {
+      type: 'divider',
+    },
+    {
+      type: 'context',
+      elements: [
         {
-          type: 'divider',
-        },
-        {
-          type: 'context',
-          elements: [
-            {
-              type: 'mrkdwn',
-              text: msg,
-            },
-          ],
+          type: 'mrkdwn',
+          text: msg,
         },
       ],
     },
