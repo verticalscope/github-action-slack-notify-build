@@ -64,7 +64,8 @@ function formatChannelName(channel) {
 module.exports.formatChannelName = formatChannelName;
 
 function buildSlackBlocks({ title, status, color, github }) {
-  const { payload, ref, workflow, eventName, event } = github.context;
+  const { payload, ref, workflow, eventName } = github.context;
+  const { event } = github.event;
   const { owner, repo } = context.repo;
   const branch = eventName === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
