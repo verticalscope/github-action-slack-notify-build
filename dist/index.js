@@ -10073,8 +10073,8 @@ function buildSlackBlocks({ title, status, color, github }) {
   const sha = eventName === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
   const runId = parseInt(process.env.GITHUB_RUN_ID, 10);
 
-  console.log(event);
-  const msg = event.head_commit.message;
+  console.log(payload);
+  const msg = event.commits[0].message;
 
   return [
     {
