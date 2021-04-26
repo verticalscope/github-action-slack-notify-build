@@ -62,3 +62,69 @@ function formatChannelName(channel) {
 }
 
 module.exports.formatChannelName = formatChannelName;
+
+function buildSlackBlocks({ title, status, color, github }) {
+  const { payload, ref, workflow, eventName, event } = github.context;
+  const { owner, repo } = context.repo;
+  const branch = eventName === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
+
+  const sha = eventName === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
+  const runId = parseInt(process.env.GITHUB_RUN_ID, 10);
+
+  const msg = event.commits[0].message;
+
+  return [
+    {
+      color: color,
+      blocks: [
+        {
+          type: 'header',
+          text: {
+            type: 'plain_text',
+            text: title,
+          },
+        },
+        {
+          type: 'section',
+          fields: [
+            {
+              type: 'mrkdwn',
+              text: `*Status:*\n${status}`,
+            },
+            {
+              type: 'mrkdwn',
+              text: `*Workflow*:\n<https://github.com/${owner}/${repo}/actions/runs/${runId} | ${workflow}>`,
+            },
+          ],
+        },
+        {
+          type: 'section',
+          fields: [
+            {
+              type: 'mrkdwn',
+              text: `*Repo:*\n<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
+            },
+            {
+              type: 'mrkdwn',
+              text: `*Branch*:\n<https://github.com/${owner}/${repo}/commit/${sha} | ${branch}>`,
+            },
+          ],
+        },
+        {
+          type: 'divider',
+        },
+        {
+          type: 'context',
+          elements: [
+            {
+              type: 'mrkdwn',
+              text: msg,
+            },
+          ],
+        },
+      ],
+    },
+  ];
+}
+
+module.exports.buildSlackBlocks = buildSlackBlocks;
