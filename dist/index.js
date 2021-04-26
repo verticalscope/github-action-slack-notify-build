@@ -10073,12 +10073,14 @@ function buildSlackBlocks({ title, status, color, github }) {
   const sha = eventName === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
   const runId = parseInt(process.env.GITHUB_RUN_ID, 10);
 
-  console.log(payload);
-  const msg = event.commits[0].message;
+  const msg = eventName === 'pull_request' ? payload.pull_request.body : payload.push.commits[0].message;
 
   return [
     {
       color: color,
+      ts: Math.floor(Date.now() / 1000),
+      footer_icon: 'https://github.githubassets.com/favicon.ico',
+      footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
       blocks: [
         {
           type: 'header',
