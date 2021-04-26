@@ -92,16 +92,6 @@ describe('Utils', () => {
           short: true,
         });
       });
-
-      it('links to the PR', () => {
-        const attachments = buildSlackAttachments({ status: 'STARTED', color: 'good', github: GITHUB_PR_EVENT });
-
-        expect(attachments[0].fields.find(a => a.title === 'Pull Request')).toEqual({
-          title: 'Pull Request',
-          value: `<https://github.com/verticalscope/github-action-slack-notify-build/pulls/1 | This is a PR>`,
-          short: true,
-        });
-      });
     });
   });
 });
